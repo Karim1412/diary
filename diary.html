@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Locked Phone - Diary</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .phone {
+        width: 375px;
+        height: 667px;
+        background: #000;
+        border-radius: 40px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+        position: relative;
+        border: 8px solid #1a1a1a;
+      }
+
+      .notch {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 200px;
+        height: 30px;
+        background: #000;
+        border-radius: 0 0 20px 20px;
+        z-index: 100;
+      }
+
+      .screen {
+        width: 100%;
+        height: 100%;
+        background: #111;
+        position: relative;
+        overflow-y: auto;
+      }
+
+      .lock-screen,
+      .enigma-screen,
+      .diary-screen {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 40px 30px;
+        color: #fff;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      /* Lock Screen */
+      .time {
+        font-size: 72px;
+        font-weight: 200;
+        margin-bottom: 10px;
+      }
+
+      .date {
+        font-size: 18px;
+        color: #999;
+        margin-bottom: 60px;
+      }
+
+      .lock-icon {
+        font-size: 48px;
+        margin-bottom: 20px;
+      }
+
+      .unlock-btn {
+        background: rgba(255, 255, 255, 0.15);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        color: #fff;
+        padding: 15px 40px;
+        font-size: 16px;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s;
+        backdrop-filter: blur(10px);
+      }
+
+      .unlock-btn:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: scale(1.05);
+      }
+
+      /* Enigma Screen */
+      .enigma-container {
+        width: 100%;
+        max-width: 320px;
+      }
+
+      .enigma-header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .enigma-title {
+        font-size: 24px;
+        margin-bottom: 10px;
+      }
+
+      .enigma-progress {
+        font-size: 14px;
+        color: #999;
+      }
+
+      .enigma-box {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 20px;
+        backdrop-filter: blur(10px);
+      }
+
+      .enigma-question {
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        color: #e0e0e0;
+      }
+
+      .enigma-hint {
+        font-size: 12px;
+        color: #888;
+        font-style: italic;
+        margin-bottom: 15px;
+      }
+
+      .enigma-input {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        border-radius: 8px;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.05);
+        color: #fff;
+        margin-bottom: 15px;
+      }
+
+      .enigma-input:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .submit-btn {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 8px;
+        color: #fff;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .submit-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .error-msg {
+        color: #ff6b6b;
+        font-size: 14px;
+        margin-top: 10px;
+        text-align: center;
+      }
+
+      .success-msg {
+        color: #51cf66;
+        font-size: 14px;
+        margin-top: 10px;
+        text-align: center;
+      }
+
+      /* Diary Screen */
+      .diary-header {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 15px;
+        text-align: center;
+        position: sticky;
+        top: 0;
+        backdrop-filter: blur(10px);
+        z-index: 10;
+      }
+
+      .diary-title {
+        font-size: 20px;
+        font-weight: 600;
+      }
+
+      .diary-content {
+        flex: 1;
+        width: 100%;
+        overflow-y: auto;
+        padding: 20px;
+      }
+
+      .diary-entry {
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 15px;
+        border-left: 4px solid #667eea;
+      }
+
+      .entry-date {
+        font-size: 12px;
+        color: #888;
+        margin-bottom: 10px;
+      }
+
+      .entry-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #667eea;
+      }
+
+      .entry-text {
+        font-size: 14px;
+        line-height: 1.8;
+        color: #ddd;
+      }
+
+      .navigation {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .nav-btn {
+        flex: 1;
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #fff;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .nav-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .nav-btn.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: transparent;
+      }
+
+      .page-indicator {
+        text-align: center;
+        color: #888;
+        font-size: 12px;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="screen">
+        <!-- Lock Screen -->
+        <div class="lock-screen" id="lockScreen">
+          <div class="time" id="currentTime">12:34</div>
+          <div class="date" id="currentDate">Monday, January 1</div>
+          <div class="lock-icon">🔒</div>
+          <button class="unlock-btn" onclick="startEnigmas()">Unlock</button>
+        </div>
+
+        <!-- Enigma Screen -->
+        <div class="enigma-screen hidden" id="enigmaScreen">
+          <div class="enigma-container">
+            <div class="enigma-header">
+              <div class="enigma-title">🧩 Unlock Challenge</div>
+              <div class="enigma-progress" id="enigmaProgress">
+                Enigma 1 of 5
+              </div>
+            </div>
+            <div class="enigma-box">
+              <div class="enigma-question" id="enigmaQuestion"></div>
+              <div class="enigma-hint" id="enigmaHint"></div>
+              <input
+                type="text"
+                class="enigma-input"
+                id="enigmaInput"
+                placeholder="Enter your answer..."
+              />
+              <button class="submit-btn" onclick="checkAnswer()">
+                Submit Answer
+              </button>
+              <div id="enigmaMessage"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Diary Screen -->
+        <div class="diary-screen hidden" id="diaryScreen">
+          <div class="diary-header">
+            <div class="diary-title">📔 Personal Diary</div>
+          </div>
+          <div class="diary-content" id="diaryContent">
+            <!-- Diary entries will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Update time and date
+      function updateTime() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, "0");
+        const minutes = String(now.getMinutes()).padStart(2, "0");
+        document.getElementById("currentTime").textContent =
+          `${hours}:${minutes}`;
+
+        const options = { weekday: "long", month: "long", day: "numeric" };
+        document.getElementById("currentDate").textContent =
+          now.toLocaleDateString("en-US", options);
+      }
+      updateTime();
+      setInterval(updateTime, 1000);
+
+      // Enigmas
+      const enigmas = [
+        {
+          question:
+            "I speak without a mouth and hear without ears. I have no body, but I come alive with wind. What am I?",
+          hint: "Think about sound...",
+          answer: "echo",
+        },
+        {
+          question: "The more you take, the more you leave behind. What am I?",
+          hint: "Think about walking...",
+          answer: "footsteps",
+        },
+        {
+          question:
+            "I am not alive, but I grow; I don't have lungs, but I need air; I don't have a mouth, but water kills me. What am I?",
+          hint: "Think about something hot...",
+          answer: "fire",
+        },
+        {
+          question:
+            "What has keys but no locks, space but no room, and you can enter but can't go inside?",
+          hint: "Think about technology...",
+          answer: "keyboard",
+        },
+        {
+          question:
+            "I have cities, but no houses. I have mountains, but no trees. I have water, but no fish. What am I?",
+          hint: "Think about navigation...",
+          answer: "map",
+        },
+      ];
+
+      let currentEnigma = 0;
+
+      function startEnigmas() {
+        document.getElementById("lockScreen").classList.add("hidden");
+        document.getElementById("enigmaScreen").classList.remove("hidden");
+        loadEnigma();
+      }
+
+      function loadEnigma() {
+        if (currentEnigma >= enigmas.length) {
+          unlockDiary();
+          return;
+        }
+
+        const enigma = enigmas[currentEnigma];
+        document.getElementById("enigmaQuestion").textContent = enigma.question;
+        document.getElementById("enigmaHint").textContent =
+          `Hint: ${enigma.hint}`;
+        document.getElementById("enigmaProgress").textContent =
+          `Enigma ${currentEnigma + 1} of ${enigmas.length}`;
+        document.getElementById("enigmaInput").value = "";
+        document.getElementById("enigmaMessage").textContent = "";
+      }
+
+      function checkAnswer() {
+        const userAnswer = document
+          .getElementById("enigmaInput")
+          .value.toLowerCase()
+          .trim();
+        const correctAnswer = enigmas[currentEnigma].answer.toLowerCase();
+        const messageEl = document.getElementById("enigmaMessage");
+
+        if (userAnswer === correctAnswer) {
+          messageEl.className = "success-msg";
+          messageEl.textContent = "✓ Correct! Loading next challenge...";
+
+          setTimeout(() => {
+            currentEnigma++;
+            loadEnigma();
+          }, 1500);
+        } else {
+          messageEl.className = "error-msg";
+          messageEl.textContent = "✗ Incorrect. Try again!";
+        }
+      }
+
+      // Handle Enter key
+      document.addEventListener("DOMContentLoaded", function () {
+        document
+          .getElementById("enigmaInput")
+          .addEventListener("keypress", function (e) {
+            if (e.key === "Enter") {
+              checkAnswer();
+            }
+          });
+      });
+
+      // Diary entries
+      const diaryEntries = [
+        {
+          date: "December 15, 2023",
+          title: "The Beginning",
+          text: "Today I decided to start this diary. There's something about putting thoughts into words that makes them feel more real. I've been thinking a lot about the path I'm on and where it might lead. The journey of self-discovery is never straightforward, but I'm learning to embrace the uncertainty.",
+        },
+        {
+          date: "December 22, 2023",
+          title: "Winter Reflections",
+          text: "The snow fell softly today, covering everything in a blanket of white. It reminded me that even the harshest seasons bring their own kind of beauty. I've been reading more, writing more, thinking more. It's amazing how much clarity comes when you give yourself permission to slow down.",
+        },
+        {
+          date: "January 1, 2024",
+          title: "New Year, New Perspective",
+          text: "Another year begins. I'm not making grand resolutions this time. Instead, I'm focusing on small, meaningful changes. Be kinder to myself. Listen more. Create more. Let go of what no longer serves me. These feel more authentic than any list of goals ever did.",
+        },
+        {
+          date: "January 14, 2024",
+          title: "Dreams and Reality",
+          text: "Had the strangest dream last night about walking through a library where all the books were blank. When I opened them, words would appear just for me. Maybe it's my subconscious telling me that I'm the author of my own story. Every day is a blank page waiting to be filled.",
+        },
+        {
+          date: "January 28, 2024",
+          title: "Lessons Learned",
+          text: "Someone told me today that courage isn't the absence of fear—it's acting despite it. That really resonated with me. I've been holding myself back from so many things because I'm afraid of failure. But what if failure is just another word for learning? What if every mistake is actually a step forward?",
+        },
+        {
+          date: "February 5, 2024",
+          title: "Finding Peace",
+          text: "I'm learning that peace isn't something you find—it's something you create. It's in the quiet moments, the deep breaths, the deliberate choices to let go of chaos. Today I chose peace over being right. And surprisingly, it felt like winning.",
+        },
+        {
+          date: "February 14, 2024",
+          title: "Love and Self",
+          text: "Valentine's Day, but I'm celebrating differently this year. I'm learning to love myself first. Not in a selfish way, but in a way that fills my cup so I can pour into others. You can't give what you don't have. Self-love isn't vanity; it's necessary.",
+        },
+        {
+          date: "February 28, 2024",
+          title: "The Journey Continues",
+          text: "Looking back through these pages, I can see how much I've grown in just a few months. The questions are different now. Deeper. More meaningful. I'm no longer asking 'What do people expect of me?' but 'What do I expect of myself?' And that shift has made all the difference.",
+        },
+      ];
+
+      function unlockDiary() {
+        document.getElementById("enigmaScreen").classList.add("hidden");
+        document.getElementById("diaryScreen").classList.remove("hidden");
+        loadDiaryPage(0);
+      }
+
+      let currentPage = 0;
+      const entriesPerPage = 2;
+
+      function loadDiaryPage(page) {
+        currentPage = page;
+        const start = page * entriesPerPage;
+        const end = start + entriesPerPage;
+        const pageEntries = diaryEntries.slice(start, end);
+
+        let html = "";
+        pageEntries.forEach((entry) => {
+          html += `
+                    <div class="diary-entry">
+                        <div class="entry-date">${entry.date}</div>
+                        <div class="entry-title">${entry.title}</div>
+                        <div class="entry-text">${entry.text}</div>
+                    </div>
+                `;
+        });
+
+        const totalPages = Math.ceil(diaryEntries.length / entriesPerPage);
+        html += `
+                <div class="navigation">
+                    <button class="nav-btn ${page === 0 ? "" : "active"}" onclick="loadDiaryPage(${page - 1})" ${page === 0 ? "disabled" : ""}>← Previous</button>
+                    <button class="nav-btn ${page === totalPages - 1 ? "" : "active"}" onclick="loadDiaryPage(${page + 1})" ${page === totalPages - 1 ? "disabled" : ""}>Next →</button>
+                </div>
+                <div class="page-indicator">Page ${page + 1} of ${totalPages}</div>
+            `;
+
+        document.getElementById("diaryContent").innerHTML = html;
+      }
+    </script>
+  </body>
+</html>
