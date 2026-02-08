@@ -409,12 +409,21 @@
         document.getElementById("enigmaMessage").textContent = "";
       }
 
+      function normalizeAnswer(text) {
+        return text
+          .toLowerCase()
+          .trim()
+          .replace(/\s+/g, " ") // normalize multiple spaces
+          .replace(/s$/, ""); // allow plural / singular
+      }
+
       function checkAnswer() {
-        const userAnswer = document
-          .getElementById("enigmaInput")
-          .value.toLowerCase()
-          .trim();
-        const correctAnswer = enigmas[currentEnigma].answer.toLowerCase();
+        const userAnswer = normalizeAnswer(
+          document.getElementById("enigmaInput").value,
+        );
+
+        const correctAnswer = normalizeAnswer(enigmas[currentEnigma].answer);
+
         const messageEl = document.getElementById("enigmaMessage");
 
         if (userAnswer === correctAnswer) {
@@ -445,44 +454,29 @@
       // Diary entries
       const diaryEntries = [
         {
-          date: "February 2, 2026",
-          title: "The Move",
-          text: "Today I completed my move into the new building. The offer was unexpectedly generous—spacious apartment, minimal cost, and an unusual number of invitations encouraging me to accept. Everything happened quickly, almost too easily. I chose not to question it. Opportunities like this rarely present themselves twice.",
-        },
-        {
-          date: "February 3, 2026",
-          title: "First Night",
-          text: "My first night here was quiet, unnervingly so. The walls are thick, the corridors long, and the silence feels deliberate. I did not meet any neighbors, yet I had the strange impression that I was not alone. The building does not feel empty.",
-        },
-        {
-          date: "February 4, 2026",
-          title: "Unusual Sounds",
-          text: "While reviewing case files late this evening, I heard footsteps outside my door. They stopped when I stood up. When I opened the door, the corridor was empty. I attributed it to the structure settling, though the explanation felt insufficient.",
-        },
-        {
           date: "February 5, 2026",
-          title: "Exploration",
-          text: "I took time today to explore the building. Certain floors seem absent from the directory, and the stairwell feels longer than it should. Mirrors in common areas reflect strangely, as if hesitating before copying my movements. I laughed it off, but locked my door earlier than usual.",
+          title: "An Ordinary Day",
+          text: "My day followed its usual rhythm. Court in the morning, meetings with clients in the afternoon, paperwork piling up as always. Being an advocat demands discipline, precision, and a certain emotional distance. I pride myself on keeping my thoughts organized, my life structured. Nothing remarkable happened today—just another step forward in a career built on logic and control.",
         },
         {
           date: "February 6, 2026",
-          title: "Disturbed Sleep",
-          text: "I dreamed of my previous home. In the dream, the doors would not open from the inside. I woke suddenly and noticed the living room light was on. I am certain I turned it off before going to bed.",
+          title: "The Invitation",
+          text: "Today, I received a luxurious invitation regarding a billing and legal procedure involving the cutting and validation of billing files. What caught my attention was not the case itself, but the offer attached to it: full accommodation in a building located near the billing place. The invitation was elegant, almost ceremonial. As someone who respects status, institutions, and symbols of authority, I admit the prestige surrounding this proposal intrigued me more than it should have.",
         },
         {
           date: "February 7, 2026",
-          title: "A Neighbor",
-          text: "I crossed paths with another resident today. He avoided eye contact and carried a heavy keyring—far more keys than necessary. None of them made a sound as he walked past me. The encounter left me unsettled for the rest of the day.",
+          title: "First Day in the Building",
+          text: "I spent my first full day in the building provided with the invitation. Architecturally, it is impressive—solid, quiet, dignified. I felt comfortable almost immediately. Everything seems well-maintained, carefully designed. Yet, I still do not know who owns the building, which is unusual given its scale and importance. I assumed I would learn in time.",
         },
         {
           date: "February 8, 2026",
-          title: "Voices",
-          text: "Tonight, I heard voices coming from within the walls. They were faint, overlapping, impossible to fully understand. One voice felt disturbingly familiar. I remained still, listening, until the whispers abruptly stopped—as if they were aware of my attention.",
+          title: "Routine Interrupted",
+          text: "The day passed as expected: work, travel, documents, discussions. Nothing out of the ordinary during my journey or professional duties. However, late in the evening, while settling into the silence of the building, I heard a sound—something not normal. It was brief, unclear, and impossible to locate. I told myself it was the structure reacting to the cold, yet the explanation did not fully satisfy me.",
         },
         {
           date: "February 9, 2026",
-          title: "Something Is Wrong",
-          text: "I can no longer ignore the feeling that something is wrong. The building feels watchful, responsive. Doors hesitate before opening. Reflections feel distant. I have the impression that my presence here was not accidental. This place did not simply welcome me—it chose me.",
+          title: "A Wrong Feeling",
+          text: "I woke up with a strange sensation that has followed me all day. The building feels different now—heavier, almost aware. Small details feel misplaced, as if something is subtly shifting when I am not looking. I cannot identify a concrete issue, but my instincts, sharpened by years of legal reasoning, tell me something is wrong. This place no longer feels neutral.",
         },
       ];
 
